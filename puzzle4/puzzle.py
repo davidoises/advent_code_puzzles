@@ -15,65 +15,93 @@ if __name__ == "__main__":
     print("Starting")
 
     basepath = path.dirname(sys.argv[0])
-    # filename = path.join(basepath, "inputs.txt")
+    filename = path.join(basepath, "inputs.txt")
     # filename = path.join(basepath, "inputs_test.txt")
-    filename = path.join(basepath, "inputs_test_simple.txt")
+    # filename = path.join(basepath, "inputs_test2.txt")
+    # filename = path.join(basepath, "inputs_test_simple.txt")
     file = parse_file(filename)
 
     # Part 1
 
     def find_xmas_occurrences(file: list[str]) -> int:
-        """ """
+        """ Check the occurrences of XMAS in forwards and backwards direction """
 
         occurrences = 0
         for line in file:
             line_ocurrences = line.count("XMAS") + line.count("SAMX")
-            if line_ocurrences > 0:
-                print(line, " : ", line_ocurrences)
             occurrences += line_ocurrences
         return occurrences
-
-    print("Horizontal")
-    # Find the XMAS in horizontal forward
-    horizontal_occurrences = find_xmas_occurrences(file)
-
-    print("Vertical")
+    
     # Traspose the file to simplify seacrhing for ocurrences in vertical orientation
     verticalized_file = ["".join(s) for s in zip(*file)]
-    # Find the XMAS in horizontal forward
-    vertical_occurrences = find_xmas_occurrences(verticalized_file)
-
-    print("Diagonal right")
+    
+    # Generate new files with the lines formed by top to down left and right diagonals
     number_of_lines = len(file)
     number_of_cols = len(file[0])
-    new_file_right = [ ["."]*number_of_cols for i in range(number_of_lines*number_of_cols)]
     diagonal_right_file = []
+    diagonal_left_file = []
+
+    # ↙ Top to bottom left
+    # All the diagonals in this direction follow the behavior of row index + col index = a fixed distance
+    # The first D is the top left corner, d = 0 + 0 = 0
+    for d in range(number_of_lines + number_of_cols - 1):
+        line = []
+        for r in range(number_of_lines):
+            c = d - r
+            if 0 <= c < number_of_cols:
+                line.append(file[r][c])
+        if line:
+            diagonal_left_file.append(''.join(line))
 
 
-    # [file[0][0], file[1][1], file[2][2], file[3][3], file[4][4]]
-    # [file[0][1], file[1][2], file[2][3], file[3][4], file[4][5]]
-    # [file[0][2], file[1][3], file[2][4], file[3][5]]
-    # [file[0][3]]
+    # ↘ Top to bottom right
+    # All the diagonals in this direction follow the behavior of row index - col index = a fixed distance
+    # The first D is the top right corner, d = 0 - 5 = -5 (assuming 5 cols)
+    for d in range(-number_of_cols + 1, number_of_lines):
+        line = []
+        for r in range(number_of_lines):
+            c = r - d
+            if 0 <= c < number_of_cols:
+                line.append(file[r][c])
+        if line:
+            diagonal_right_file.append(''.join(line))
 
-    # [file[1][0], file[2][1], file[3][2], file[4][3], file[5][4]]
-    # [file[1][1], file[2][2], file[3][3], file[4][4], file[5][5]]
-    # [file[1][1], file[2][2], file[3][3], file[4][4], file[5][5]]
+    # Find all occurrences
+    horizontal_occurrences = find_xmas_occurrences(file)
+    vertical_occurrences = find_xmas_occurrences(verticalized_file)
+    diagonal_right_occurrences = find_xmas_occurrences(diagonal_right_file)
+    diagonal_left_occurrences = find_xmas_occurrences(diagonal_left_file)
+    total_occurrences = horizontal_occurrences + vertical_occurrences + diagonal_right_occurrences + diagonal_left_occurrences
+    print("total occurrences of XMAS: ", total_occurrences)
 
+    # Part 2
 
-
-    line_count = 0
-    for i in range(number_of_lines):
-        for j in range(number_of_cols):
-            # print("Line")
-            for z in range(number_of_cols):
-                if (i+z) < number_of_lines and (j+z) < number_of_cols:
-                    # print(f"[{i+z},{j+z}]")
-                    new_file_right[line_count][z] = file[i+z][j+z]
-            diagonal_right_file.append("".join(new_file_right[line_count]))
-            line_count += 1
-
-    horizontal_occurrences = find_xmas_occurrences(diagonal_right_file)
-
-
-
+    characters = []
+    for line in file:
+        characters.append(list(line))
     
+    match_count = 0
+    rows = len(characters)
+    cols = len(characters[0])
+    # Iterate through rows skiping borders
+    for r in range(1, rows-1):
+        # Iterate through cols skiping borders
+        for c in range(1, cols-1):
+
+            # Found a possible center of a X
+            if characters[r][c] == "A":
+                match = True
+                # test posibilities for ↘ diagonal
+                above_left = characters[r-1][c-1]
+                down_right = characters[r+1][c+1]
+                match &= (above_left == "M" and down_right == "S") or (above_left == "S" and down_right == "M")
+
+                # test posibilities for ↙ diagonal
+                above_right = characters[r-1][c+1]
+                down_left = characters[r+1][c-1]
+                match &= (above_right == "M" and down_left == "S") or (above_right == "S" and down_left == "M")
+
+                if match:
+                    match_count += 1
+
+    print("total occurrences of X-MAS: ", match_count)
