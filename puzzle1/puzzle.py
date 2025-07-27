@@ -1,5 +1,7 @@
 
 import numpy as np
+from os import path
+import sys
 
 def parse_lists(filename: str) -> tuple[list[int],list[int]]:
     """ Parse a text file with 2 columns and return a left list and a right list of ints """
@@ -20,8 +22,10 @@ def parse_lists(filename: str) -> tuple[list[int],list[int]]:
 if __name__ == "__main__":
     print("Starting")
 
-    left_list, right_list = parse_lists("inputs_1.txt")
-    # left_list, right_list = parse_lists("inputs_1_test.txt")
+    basepath = path.dirname(sys.argv[0])
+    filename = path.join(basepath, "inputs.txt")
+    # filename = path.join(basepath, "inputs_test.txt")
+    left_list, right_list = parse_lists(filename)
 
     # Part 1
 
