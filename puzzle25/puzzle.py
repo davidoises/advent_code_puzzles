@@ -1,6 +1,8 @@
 import numpy as np
+from os import path
+import sys
 
-def parse_schematics_files(filename: str) -> (list[list[int]], list[list[int]]):
+def parse_schematics_files(filename: str) -> tuple[list[list[int]], list[list[int]]]:
     
     # Resulting lists start empty.
     # Each list's element contains an array describing the spaces taken by the lock or key.
@@ -61,7 +63,9 @@ def parse_schematics_files(filename: str) -> (list[list[int]], list[list[int]]):
 if __name__ == "__main__":
     print("Starting")
 
-    locks, keys = parse_schematics_files("inputs_25.txt")
+    basepath = path.dirname(sys.argv[0])
+    filename = path.join(basepath, "inputs.txt")
+    locks, keys = parse_schematics_files(filename)
 
     print("Processed ", len(locks), " locks schematics")
     print("Processed ", len(keys), " keys schematics")
