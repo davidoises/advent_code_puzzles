@@ -2,6 +2,7 @@
 import numpy as np
 from os import path
 import sys
+import time
 
 def parse_lists(filename: str) -> tuple[list[int],list[int]]:
     """ Parse a text file with 2 columns and return a left list and a right list of ints """
@@ -22,6 +23,8 @@ def parse_lists(filename: str) -> tuple[list[int],list[int]]:
 if __name__ == "__main__":
     print("Starting")
 
+    start = time.perf_counter()
+
     basepath = path.dirname(sys.argv[0])
     filename = path.join(basepath, "inputs.txt")
     # filename = path.join(basepath, "inputs_test.txt")
@@ -38,6 +41,10 @@ if __name__ == "__main__":
 
     # Aggregate all into a total distance value
     total_distance = distances.sum()
+
+    end = time.perf_counter()
+    duration = (end - start)*1000
+    print(f"Execution time: {duration:.6f} milliseconds")
     print("total distance: ", total_distance)
 
     # Part 2

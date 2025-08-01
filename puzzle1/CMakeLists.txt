@@ -9,7 +9,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 # Define source files 
 set(SRCS  
-    ${CMAKE_CURRENT_SOURCE_DIR}/puzzle.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/puzzle.cpp
 )
 
 set(EXECUTABLE ${CMAKE_PROJECT_NAME})
